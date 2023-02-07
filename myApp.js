@@ -31,47 +31,97 @@ const createAndSavePerson = (done) => {
 };
 
 const createManyPeople = (arrayOfPeople, done) => {
-  done(null /*, data*/);
+  Person.create(arrayOfPeople,(err,data)=>{
+    if(err) return console.log(err);
+    done(null, data);
+
+  })
+
 };
 
 const findPeopleByName = (personName, done) => {
-  done(null /*, data*/);
+  Person.find({person:personName},(err,data)=>{
+    if(err) return console.log(err);
+    done(null, data);
+
+  })
 };
 
 const findOneByFood = (food, done) => {
-  done(null /*, data*/);
+  Person.findOne({favoriteFoods:food},(err,data)=>{
+    if(err) return console.log(err);
+    done(null,data);
+
+  })
 };
 
+// When saving a document, MongoDB automatically adds the field _id, and set it to a unique alphanumeric key. 
+// Searching by _id is an extremely frequent operation, so Mongoose provides a dedicated method for it.
 const findPersonById = (personId, done) => {
-  done(null /*, data*/);
+  Person.findById(personId,(err,data)=>{
+    if(err) return console.log(err);
+    done(null,data);
+  })
+  // done(null /*, data*/);
 };
+
 
 const findEditThenSave = (personId, done) => {
   const foodToAdd = "hamburger";
 
-  done(null /*, data*/);
+  Person.findById(personId,(err,data)=>{
+    data.favoriteFoods.push(foodToAdd);
+    data.save((err,updatedData)=>{
+      if(err)return console.log(err);
+      done(null,updatedData);
+
+    })
+  })
+
 };
 
 const findAndUpdate = (personName, done) => {
   const ageToSet = 20;
+  //{new:true} return updated document
+  Person.findOneAndUpdate({name:personName},{age:ageToSet},{new:true},(err,data)=>{
+    if(err) return console.log(err);
+    done(null,data);
+  })
 
-  done(null /*, data*/);
+  // done(null /*, data*/);
 };
 
 const removeById = (personId, done) => {
-  done(null /*, data*/);
+  Person.findOneAndRemove(personId,(err,data)=>{
+    done(null,data);
+  })
+
+  // done(null /*, data*/);
 };
 
 const removeManyPeople = (done) => {
-  const nameToRemove = "Mary";
+  // const nameToRemove = "Mary";
+  // Person.deleteMany({name:nameToRemove},
+  // (err,data)=>{
+  //   if(err) return console.log(err);
+  //   done(null,data)}
+  // )
 
   done(null /*, data*/);
 };
 
 const queryChain = (done) => {
   const foodToSearch = "burrito";
-
-  done(null /*, data*/);
+  Person.find({ age: 55 })
+  .sort({ name: -1 })
+  .limit(5)
+  .select({ favoriteFoods: foodToSearch })
+  .exec(function(err, data) {
+    //do something here
+    if(err) return console.log(err);
+    done(null,data);
+  });
+  
 };
 
 /** **Well Done !!**
